@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth, primaryRoute } from "@/lib/auth-context";
@@ -17,7 +17,6 @@ export const Route = createFileRoute("/login")({
 });
 
 function Login() {
-  const navigate = useNavigate();
   const search = Route.useSearch();
   const { user, roles, loading } = useAuth();
   const [email, setEmail] = useState("");
@@ -29,7 +28,7 @@ function Login() {
       const target = search.redirect || primaryRoute(roles);
       window.location.assign(target);
     }
-  }, [user, roles, loading, navigate, search.redirect]);
+  }, [user, roles, loading, search.redirect]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
