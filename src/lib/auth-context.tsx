@@ -30,20 +30,46 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) {
-        setTimeout(() => loadRoles(s.user.id), 0);
-      } else {
-        setRoles([]);
-      }
     });
-    supabase.auth.getSession().then(({ data: { session: s } }) => {
+
+    void supabase.auth.getSession().then(({ data: { session: s } }) => {
       setSession(s);
       setUser(s?.user ?? null);
-      if (s?.user) loadRoles(s.user.id).finally(() => setLoading(false));
-      else setLoading(false);
     });
+
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const syncRoles = async () => {
+      if (!user) {
+        setRoles([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+        if (!cancelled) {
+          setRoles((data ?? []).map((r) => r.role as AppRole));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void syncRoles();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const value: AuthCtx = {
     user,
