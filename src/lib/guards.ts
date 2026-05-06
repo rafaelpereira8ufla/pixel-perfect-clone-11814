@@ -2,6 +2,14 @@ import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/lib/auth-context";
 
+export function getRedirectTarget(location: {
+  pathname: string;
+  searchStr?: string;
+  hash?: string;
+}) {
+  return `${location.pathname}${location.searchStr ?? ""}${location.hash ?? ""}`;
+}
+
 export async function requireAuth(locationHref: string, allowed?: AppRole[]) {
   const {
     data: { user },
