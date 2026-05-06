@@ -14,16 +14,280 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      consultas: {
+        Row: {
+          created_at: string
+          data_consulta: string
+          horario_id: string | null
+          id: string
+          link_telemedicina: string | null
+          medico_id: string
+          modalidade: Database["public"]["Enums"]["consulta_modalidade"]
+          paciente_id: string
+          status: Database["public"]["Enums"]["consulta_status"]
+        }
+        Insert: {
+          created_at?: string
+          data_consulta: string
+          horario_id?: string | null
+          id?: string
+          link_telemedicina?: string | null
+          medico_id: string
+          modalidade: Database["public"]["Enums"]["consulta_modalidade"]
+          paciente_id: string
+          status?: Database["public"]["Enums"]["consulta_status"]
+        }
+        Update: {
+          created_at?: string
+          data_consulta?: string
+          horario_id?: string | null
+          id?: string
+          link_telemedicina?: string | null
+          medico_id?: string
+          modalidade?: Database["public"]["Enums"]["consulta_modalidade"]
+          paciente_id?: string
+          status?: Database["public"]["Enums"]["consulta_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "consultas_horario_id_fkey"
+            columns: ["horario_id"]
+            isOneToOne: false
+            referencedRelation: "horarios_disponiveis"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultas_medico_id_fkey"
+            columns: ["medico_id"]
+            isOneToOne: false
+            referencedRelation: "medicos"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "consultas_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      horarios_disponiveis: {
+        Row: {
+          created_at: string
+          data: string
+          disponivel: boolean
+          hora_fim: string
+          hora_inicio: string
+          id: string
+          medico_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: string
+          disponivel?: boolean
+          hora_fim: string
+          hora_inicio: string
+          id?: string
+          medico_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          disponivel?: boolean
+          hora_fim?: string
+          hora_inicio?: string
+          id?: string
+          medico_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "horarios_disponiveis_medico_id_fkey"
+            columns: ["medico_id"]
+            isOneToOne: false
+            referencedRelation: "medicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      medicos: {
+        Row: {
+          created_at: string
+          crm: string
+          email: string | null
+          especialidade: string
+          id: string
+          nome: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          crm: string
+          email?: string | null
+          especialidade: string
+          id?: string
+          nome: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          crm?: string
+          email?: string | null
+          especialidade?: string
+          id?: string
+          nome?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      pagamentos: {
+        Row: {
+          consulta_id: string
+          created_at: string
+          forma_pagamento: Database["public"]["Enums"]["forma_pagamento"]
+          id: string
+          nota_fiscal_gerada: boolean
+          valor: number
+        }
+        Insert: {
+          consulta_id: string
+          created_at?: string
+          forma_pagamento: Database["public"]["Enums"]["forma_pagamento"]
+          id?: string
+          nota_fiscal_gerada?: boolean
+          valor: number
+        }
+        Update: {
+          consulta_id?: string
+          created_at?: string
+          forma_pagamento?: Database["public"]["Enums"]["forma_pagamento"]
+          id?: string
+          nota_fiscal_gerada?: boolean
+          valor?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pagamentos_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: false
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          cpf: string | null
+          created_at: string
+          data_nascimento: string | null
+          email: string | null
+          id: string
+          nome: string
+          telefone: string | null
+        }
+        Insert: {
+          cpf?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          email?: string | null
+          id: string
+          nome: string
+          telefone?: string | null
+        }
+        Update: {
+          cpf?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          email?: string | null
+          id?: string
+          nome?: string
+          telefone?: string | null
+        }
+        Relationships: []
+      }
+      resultados_consulta: {
+        Row: {
+          consulta_id: string
+          descricao: string
+          id: string
+          medico_id: string
+          publicado_em: string
+        }
+        Insert: {
+          consulta_id: string
+          descricao: string
+          id?: string
+          medico_id: string
+          publicado_em?: string
+        }
+        Update: {
+          consulta_id?: string
+          descricao?: string
+          id?: string
+          medico_id?: string
+          publicado_em?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resultados_consulta_consulta_id_fkey"
+            columns: ["consulta_id"]
+            isOneToOne: false
+            referencedRelation: "consultas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "resultados_consulta_medico_id_fkey"
+            columns: ["medico_id"]
+            isOneToOne: false
+            referencedRelation: "medicos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "paciente" | "recepcionista" | "medico" | "gestor"
+      consulta_modalidade: "presencial" | "telemedicina"
+      consulta_status:
+        | "agendado"
+        | "confirmado"
+        | "realizado"
+        | "cancelado"
+        | "link_enviado"
+      forma_pagamento: "dinheiro" | "cartao" | "convenio"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +414,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["paciente", "recepcionista", "medico", "gestor"],
+      consulta_modalidade: ["presencial", "telemedicina"],
+      consulta_status: [
+        "agendado",
+        "confirmado",
+        "realizado",
+        "cancelado",
+        "link_enviado",
+      ],
+      forma_pagamento: ["dinheiro", "cartao", "convenio"],
+    },
   },
 } as const
