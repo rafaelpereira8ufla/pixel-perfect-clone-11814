@@ -1,11 +1,11 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { CalendarDays, Users, CreditCard, UserPlus } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
-import { requireAuth } from "@/lib/guards";
+import { getRedirectTarget, requireAuth } from "@/lib/guards";
 
 export const Route = createFileRoute("/recepcao")({
   beforeLoad: async ({ location }) => {
-    await requireAuth(location.href, ["recepcionista", "gestor"]);
+    await requireAuth(getRedirectTarget(location), ["recepcionista", "gestor"]);
   },
   component: RecepcaoLayout,
 });
