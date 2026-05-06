@@ -1,6 +1,8 @@
 import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { AuthProvider } from "@/lib/auth-context";
+import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
   return (
@@ -29,14 +31,12 @@ export const Route = createRootRoute({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Saúde Total — Agendamento Inteligente" },
+      { name: "description", content: "Sistema de agendamento da Clínica Saúde Total: pacientes, recepção, médicos e gestão." },
+      { property: "og:title", content: "Saúde Total — Agendamento Inteligente" },
+      { property: "og:description", content: "Sistema integrado de agendamento médico, telemedicina e gestão da clínica." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -65,5 +65,10 @@ function RootShell({ children }: { children: React.ReactNode }) {
 }
 
 function RootComponent() {
-  return <Outlet />;
+  return (
+    <AuthProvider>
+      <Outlet />
+      <Toaster richColors position="top-right" />
+    </AuthProvider>
+  );
 }
