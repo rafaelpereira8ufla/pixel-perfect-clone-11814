@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export function ProtectedShell({ children, allowed }: { children: ReactNode; allowed?: AppRole[] }) {
   const location = useLocation();
-  const [status, setStatus] = useState<"checking" | "authorized" | "redirecting">("checking");
+  const [status, setStatus] = useState<"checking" | "authorized">("checking");
 
   useEffect(() => {
     let cancelled = false;
@@ -14,15 +14,20 @@ export function ProtectedShell({ children, allowed }: { children: ReactNode; all
     const checkAccess = async () => {
       const target = `${location.pathname}${location.searchStr}${location.hash}`;
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const user = session?.user;
 
       if (!user) {
         if (!cancelled) {
-          setStatus("redirecting");
           window.location.assign(`/login?redirect=${encodeURIComponent(target)}`);
         }
         return;
+      }
+
+      if (!cancelled) {
+        setStatus("authorized");
       }
 
       if (allowed?.length) {
@@ -31,15 +36,10 @@ export function ProtectedShell({ children, allowed }: { children: ReactNode; all
 
         if (!roles.some((role) => allowed.includes(role))) {
           if (!cancelled) {
-            setStatus("redirecting");
             window.location.assign("/");
           }
           return;
         }
-      }
-
-      if (!cancelled) {
-        setStatus("authorized");
       }
     };
 
