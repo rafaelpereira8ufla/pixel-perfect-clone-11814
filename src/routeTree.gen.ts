@@ -9,22 +9,45 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RecepcaoRouteImport } from './routes/recepcao'
 import { Route as PacienteRouteImport } from './routes/paciente'
+import { Route as MedicoRouteImport } from './routes/medico'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as GestorRouteImport } from './routes/gestor'
 import { Route as CadastroRouteImport } from './routes/cadastro'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RecepcaoIndexRouteImport } from './routes/recepcao.index'
 import { Route as PacienteIndexRouteImport } from './routes/paciente.index'
+import { Route as RecepcaoPagamentosRouteImport } from './routes/recepcao.pagamentos'
+import { Route as RecepcaoPacientesRouteImport } from './routes/recepcao.pacientes'
+import { Route as RecepcaoCadastrarRouteImport } from './routes/recepcao.cadastrar'
+import { Route as RecepcaoAgendaRouteImport } from './routes/recepcao.agenda'
 import { Route as PacienteResultadosRouteImport } from './routes/paciente.resultados'
 import { Route as PacienteAgendarRouteImport } from './routes/paciente.agendar'
 
+const RecepcaoRoute = RecepcaoRouteImport.update({
+  id: '/recepcao',
+  path: '/recepcao',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PacienteRoute = PacienteRouteImport.update({
   id: '/paciente',
   path: '/paciente',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MedicoRoute = MedicoRouteImport.update({
+  id: '/medico',
+  path: '/medico',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GestorRoute = GestorRouteImport.update({
+  id: '/gestor',
+  path: '/gestor',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CadastroRoute = CadastroRouteImport.update({
@@ -37,10 +60,35 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RecepcaoIndexRoute = RecepcaoIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RecepcaoRoute,
+} as any)
 const PacienteIndexRoute = PacienteIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PacienteRoute,
+} as any)
+const RecepcaoPagamentosRoute = RecepcaoPagamentosRouteImport.update({
+  id: '/pagamentos',
+  path: '/pagamentos',
+  getParentRoute: () => RecepcaoRoute,
+} as any)
+const RecepcaoPacientesRoute = RecepcaoPacientesRouteImport.update({
+  id: '/pacientes',
+  path: '/pacientes',
+  getParentRoute: () => RecepcaoRoute,
+} as any)
+const RecepcaoCadastrarRoute = RecepcaoCadastrarRouteImport.update({
+  id: '/cadastrar',
+  path: '/cadastrar',
+  getParentRoute: () => RecepcaoRoute,
+} as any)
+const RecepcaoAgendaRoute = RecepcaoAgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
+  getParentRoute: () => RecepcaoRoute,
 } as any)
 const PacienteResultadosRoute = PacienteResultadosRouteImport.update({
   id: '/resultados',
@@ -56,68 +104,124 @@ const PacienteAgendarRoute = PacienteAgendarRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/gestor': typeof GestorRoute
   '/login': typeof LoginRoute
+  '/medico': typeof MedicoRoute
   '/paciente': typeof PacienteRouteWithChildren
+  '/recepcao': typeof RecepcaoRouteWithChildren
   '/paciente/agendar': typeof PacienteAgendarRoute
   '/paciente/resultados': typeof PacienteResultadosRoute
+  '/recepcao/agenda': typeof RecepcaoAgendaRoute
+  '/recepcao/cadastrar': typeof RecepcaoCadastrarRoute
+  '/recepcao/pacientes': typeof RecepcaoPacientesRoute
+  '/recepcao/pagamentos': typeof RecepcaoPagamentosRoute
   '/paciente/': typeof PacienteIndexRoute
+  '/recepcao/': typeof RecepcaoIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/gestor': typeof GestorRoute
   '/login': typeof LoginRoute
+  '/medico': typeof MedicoRoute
   '/paciente/agendar': typeof PacienteAgendarRoute
   '/paciente/resultados': typeof PacienteResultadosRoute
+  '/recepcao/agenda': typeof RecepcaoAgendaRoute
+  '/recepcao/cadastrar': typeof RecepcaoCadastrarRoute
+  '/recepcao/pacientes': typeof RecepcaoPacientesRoute
+  '/recepcao/pagamentos': typeof RecepcaoPagamentosRoute
   '/paciente': typeof PacienteIndexRoute
+  '/recepcao': typeof RecepcaoIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
+  '/gestor': typeof GestorRoute
   '/login': typeof LoginRoute
+  '/medico': typeof MedicoRoute
   '/paciente': typeof PacienteRouteWithChildren
+  '/recepcao': typeof RecepcaoRouteWithChildren
   '/paciente/agendar': typeof PacienteAgendarRoute
   '/paciente/resultados': typeof PacienteResultadosRoute
+  '/recepcao/agenda': typeof RecepcaoAgendaRoute
+  '/recepcao/cadastrar': typeof RecepcaoCadastrarRoute
+  '/recepcao/pacientes': typeof RecepcaoPacientesRoute
+  '/recepcao/pagamentos': typeof RecepcaoPagamentosRoute
   '/paciente/': typeof PacienteIndexRoute
+  '/recepcao/': typeof RecepcaoIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/cadastro'
+    | '/gestor'
     | '/login'
+    | '/medico'
     | '/paciente'
+    | '/recepcao'
     | '/paciente/agendar'
     | '/paciente/resultados'
+    | '/recepcao/agenda'
+    | '/recepcao/cadastrar'
+    | '/recepcao/pacientes'
+    | '/recepcao/pagamentos'
     | '/paciente/'
+    | '/recepcao/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/cadastro'
+    | '/gestor'
     | '/login'
+    | '/medico'
     | '/paciente/agendar'
     | '/paciente/resultados'
+    | '/recepcao/agenda'
+    | '/recepcao/cadastrar'
+    | '/recepcao/pacientes'
+    | '/recepcao/pagamentos'
     | '/paciente'
+    | '/recepcao'
   id:
     | '__root__'
     | '/'
     | '/cadastro'
+    | '/gestor'
     | '/login'
+    | '/medico'
     | '/paciente'
+    | '/recepcao'
     | '/paciente/agendar'
     | '/paciente/resultados'
+    | '/recepcao/agenda'
+    | '/recepcao/cadastrar'
+    | '/recepcao/pacientes'
+    | '/recepcao/pagamentos'
     | '/paciente/'
+    | '/recepcao/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CadastroRoute: typeof CadastroRoute
+  GestorRoute: typeof GestorRoute
   LoginRoute: typeof LoginRoute
+  MedicoRoute: typeof MedicoRoute
   PacienteRoute: typeof PacienteRouteWithChildren
+  RecepcaoRoute: typeof RecepcaoRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/recepcao': {
+      id: '/recepcao'
+      path: '/recepcao'
+      fullPath: '/recepcao'
+      preLoaderRoute: typeof RecepcaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/paciente': {
       id: '/paciente'
       path: '/paciente'
@@ -125,11 +229,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PacienteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/medico': {
+      id: '/medico'
+      path: '/medico'
+      fullPath: '/medico'
+      preLoaderRoute: typeof MedicoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gestor': {
+      id: '/gestor'
+      path: '/gestor'
+      fullPath: '/gestor'
+      preLoaderRoute: typeof GestorRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/cadastro': {
@@ -146,12 +264,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/recepcao/': {
+      id: '/recepcao/'
+      path: '/'
+      fullPath: '/recepcao/'
+      preLoaderRoute: typeof RecepcaoIndexRouteImport
+      parentRoute: typeof RecepcaoRoute
+    }
     '/paciente/': {
       id: '/paciente/'
       path: '/'
       fullPath: '/paciente/'
       preLoaderRoute: typeof PacienteIndexRouteImport
       parentRoute: typeof PacienteRoute
+    }
+    '/recepcao/pagamentos': {
+      id: '/recepcao/pagamentos'
+      path: '/pagamentos'
+      fullPath: '/recepcao/pagamentos'
+      preLoaderRoute: typeof RecepcaoPagamentosRouteImport
+      parentRoute: typeof RecepcaoRoute
+    }
+    '/recepcao/pacientes': {
+      id: '/recepcao/pacientes'
+      path: '/pacientes'
+      fullPath: '/recepcao/pacientes'
+      preLoaderRoute: typeof RecepcaoPacientesRouteImport
+      parentRoute: typeof RecepcaoRoute
+    }
+    '/recepcao/cadastrar': {
+      id: '/recepcao/cadastrar'
+      path: '/cadastrar'
+      fullPath: '/recepcao/cadastrar'
+      preLoaderRoute: typeof RecepcaoCadastrarRouteImport
+      parentRoute: typeof RecepcaoRoute
+    }
+    '/recepcao/agenda': {
+      id: '/recepcao/agenda'
+      path: '/agenda'
+      fullPath: '/recepcao/agenda'
+      preLoaderRoute: typeof RecepcaoAgendaRouteImport
+      parentRoute: typeof RecepcaoRoute
     }
     '/paciente/resultados': {
       id: '/paciente/resultados'
@@ -186,12 +339,44 @@ const PacienteRouteWithChildren = PacienteRoute._addFileChildren(
   PacienteRouteChildren,
 )
 
+interface RecepcaoRouteChildren {
+  RecepcaoAgendaRoute: typeof RecepcaoAgendaRoute
+  RecepcaoCadastrarRoute: typeof RecepcaoCadastrarRoute
+  RecepcaoPacientesRoute: typeof RecepcaoPacientesRoute
+  RecepcaoPagamentosRoute: typeof RecepcaoPagamentosRoute
+  RecepcaoIndexRoute: typeof RecepcaoIndexRoute
+}
+
+const RecepcaoRouteChildren: RecepcaoRouteChildren = {
+  RecepcaoAgendaRoute: RecepcaoAgendaRoute,
+  RecepcaoCadastrarRoute: RecepcaoCadastrarRoute,
+  RecepcaoPacientesRoute: RecepcaoPacientesRoute,
+  RecepcaoPagamentosRoute: RecepcaoPagamentosRoute,
+  RecepcaoIndexRoute: RecepcaoIndexRoute,
+}
+
+const RecepcaoRouteWithChildren = RecepcaoRoute._addFileChildren(
+  RecepcaoRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CadastroRoute: CadastroRoute,
+  GestorRoute: GestorRoute,
   LoginRoute: LoginRoute,
+  MedicoRoute: MedicoRoute,
   PacienteRoute: PacienteRouteWithChildren,
+  RecepcaoRoute: RecepcaoRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
