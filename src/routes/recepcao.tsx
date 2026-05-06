@@ -4,8 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { requireAuth } from "@/lib/guards";
 
 export const Route = createFileRoute("/recepcao")({
-  beforeLoad: async () => {
-    await requireAuth(["recepcionista", "gestor"]);
+  beforeLoad: async ({ location }) => {
+    await requireAuth(location.href, ["recepcionista", "gestor"]);
   },
   component: RecepcaoLayout,
 });

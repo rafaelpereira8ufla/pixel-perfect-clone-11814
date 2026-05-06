@@ -4,7 +4,7 @@ import { AppShell } from "@/components/AppShell";
 import { Stethoscope } from "lucide-react";
 
 export const Route = createFileRoute("/medico")({
-  beforeLoad: async () => { await requireAuth(["medico", "gestor"]); },
+  beforeLoad: async ({ location }) => { await requireAuth(location.href, ["medico", "gestor"]); },
   component: () => (
     <AppShell title="Painel do Médico" items={[{ to: "/medico", label: "Em breve", icon: Stethoscope }]}>
       <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">

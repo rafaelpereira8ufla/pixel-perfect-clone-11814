@@ -4,8 +4,8 @@ import { AppShell } from "@/components/AppShell";
 import { requireAuth } from "@/lib/guards";
 
 export const Route = createFileRoute("/paciente")({
-  beforeLoad: async () => {
-    await requireAuth(["paciente", "recepcionista", "medico", "gestor"]);
+  beforeLoad: async ({ location }) => {
+    await requireAuth(location.href, ["paciente", "recepcionista", "medico", "gestor"]);
   },
   component: PacienteLayout,
 });
