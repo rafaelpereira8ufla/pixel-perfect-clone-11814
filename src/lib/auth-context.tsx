@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -20,52 +20,56 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [loading, setLoading] = useState(true);
-  const syncIdRef = useRef(0);
 
   const loadRoles = async (uid: string) => {
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
     setRoles((data ?? []).map((r) => r.role as AppRole));
   };
 
-  const syncAuthState = async (nextSession: Session | null) => {
-    const syncId = ++syncIdRef.current;
-
-    setSession(nextSession);
-    setUser(nextSession?.user ?? null);
-
-    if (nextSession?.user) {
-      setLoading(true);
-      try {
-        await loadRoles(nextSession.user.id);
-      } catch {
-        if (syncIdRef.current === syncId) {
-          setRoles([]);
-        }
-      } finally {
-        if (syncIdRef.current === syncId) {
-          setLoading(false);
-        }
-      }
-      return;
-    }
-
-    if (syncIdRef.current === syncId) {
-      setRoles([]);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
-      void syncAuthState(s);
+      setSession(s);
+      setUser(s?.user ?? null);
     });
 
     void supabase.auth.getSession().then(({ data: { session: s } }) => {
-      void syncAuthState(s);
+      setSession(s);
+      setUser(s?.user ?? null);
     });
 
     return () => sub.subscription.unsubscribe();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const syncRoles = async () => {
+      if (!user) {
+        setRoles([]);
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
+        if (!cancelled) {
+          setRoles((data ?? []).map((r) => r.role as AppRole));
+        }
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void syncRoles();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const value: AuthCtx = {
     user,
