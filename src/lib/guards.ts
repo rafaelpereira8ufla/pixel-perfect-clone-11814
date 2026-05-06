@@ -2,14 +2,17 @@ import { redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import type { AppRole } from "@/lib/auth-context";
 
-export async function requireAuth(allowed?: AppRole[]) {
+export async function requireAuth(locationHref: string, allowed?: AppRole[]) {
   const {
     data: { user },
     error,
   } = await supabase.auth.getUser();
 
   if (error || !user) {
-    throw redirect({ to: "/login" });
+    throw redirect({
+      to: "/login",
+      search: { redirect: locationHref },
+    });
   }
 
   if (allowed && allowed.length) {
