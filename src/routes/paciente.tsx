@@ -1,4 +1,4 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { CalendarPlus, CalendarDays, FileText } from "lucide-react";
 import { AppShell } from "@/components/AppShell";
 import { requireAuth } from "@/lib/guards";
@@ -24,5 +24,3 @@ function PacienteLayout() {
     </AppShell>
   );
 }
-
-export const _ = redirect; // keep import alive when not used
