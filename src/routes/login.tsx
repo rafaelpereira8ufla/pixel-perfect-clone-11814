@@ -9,20 +9,27 @@ import { toast } from "sonner";
 import { Activity } from "lucide-react";
 
 export const Route = createFileRoute("/login")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect: typeof search.redirect === "string" ? search.redirect : "",
+  }),
   head: () => ({ meta: [{ title: "Entrar — Saúde Total" }] }),
   component: Login,
 });
 
 function Login() {
   const navigate = useNavigate();
+  const search = Route.useSearch();
   const { user, roles, loading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && user) navigate({ to: primaryRoute(roles) });
-  }, [user, roles, loading, navigate]);
+    if (!loading && user) {
+      const target = search.redirect || primaryRoute(roles);
+      window.location.assign(target);
+    }
+  }, [user, roles, loading, navigate, search.redirect]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
