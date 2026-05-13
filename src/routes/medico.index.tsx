@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
@@ -13,11 +13,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CalendarPlus, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/paciente/")({
-  component: MinhasConsultas,
+export const Route = createFileRoute("/medico/")({
+  component: AgendaMedico,
 });
 
 interface Consulta {
@@ -25,15 +25,17 @@ interface Consulta {
   modalidade: string;
   status: string;
   data_consulta: string;
-  link_telemedicina: string | null;
   motivo_cancelamento: string | null;
-  medicos: { nome: string; especialidade: string } | null;
+  medico_id: string;
+  paciente_id: string;
+  profiles: { nome: string; email: string | null } | null;
 }
 
-function MinhasConsultas() {
+function AgendaMedico() {
   const { user } = useAuth();
   const [list, setList] = useState<Consulta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [medicoId, setMedicoId] = useState<string | null>(null);
   const [cancelTarget, setCancelTarget] = useState<Consulta | null>(null);
   const [motivo, setMotivo] = useState("");
   const [busy, setBusy] = useState(false);
@@ -41,13 +43,38 @@ function MinhasConsultas() {
   const load = async () => {
     if (!user) return;
     setLoading(true);
-    const { data, error } = await supabase
+    const { data: m } = await supabase.from("medicos").select("id").eq("user_id", user.id).maybeSingle();
+    const mid = m?.id ?? null;
+    setMedicoId(mid);
+
+    let query = supabase
       .from("consultas")
-      .select("id, modalidade, status, data_consulta, link_telemedicina, motivo_cancelamento, medicos(nome, especialidade)")
-      .eq("paciente_id", user.id)
-      .order("data_consulta", { ascending: false });
-    if (error) toast.error(error.message);
-    setList((data as unknown as Consulta[]) ?? []);
+      .select(
+        "id, modalidade, status, data_consulta, motivo_cancelamento, medico_id, paciente_id, profiles!consultas_paciente_id_fkey(nome, email)"
+      )
+      .order("data_consulta", { ascending: true });
+
+    if (mid) query = query.eq("medico_id", mid);
+
+    const { data, error } = await query;
+    if (error) {
+      // fallback sem join se a FK não existir
+      const fb = await supabase
+        .from("consultas")
+        .select("id, modalidade, status, data_consulta, motivo_cancelamento, medico_id, paciente_id")
+        .order("data_consulta", { ascending: true });
+      const rows = (fb.data ?? []) as Consulta[];
+      const ids = Array.from(new Set(rows.map((r) => r.paciente_id)));
+      const { data: profs } = await supabase.from("profiles").select("id, nome, email").in("id", ids);
+      const map = new Map((profs ?? []).map((p) => [p.id, { nome: p.nome, email: p.email }]));
+      setList(
+        rows
+          .filter((r) => !mid || r.medico_id === mid)
+          .map((r) => ({ ...r, profiles: map.get(r.paciente_id) ?? null }))
+      );
+    } else {
+      setList((data as unknown as Consulta[]) ?? []);
+    }
     setLoading(false);
   };
 
@@ -56,8 +83,6 @@ function MinhasConsultas() {
   }, [user]);
 
   const openCancel = (c: Consulta) => {
-    const diff = (new Date(c.data_consulta).getTime() - Date.now()) / 36e5;
-    if (diff < 2) return toast.error("Cancelamento permitido apenas com mais de 2h de antecedência.");
     setMotivo("");
     setCancelTarget(c);
   };
@@ -83,20 +108,17 @@ function MinhasConsultas() {
   };
 
   return (
-    <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-        <h2 className="text-xl font-semibold">Minhas Consultas</h2>
-        <Button asChild>
-          <Link to="/paciente/agendar">
-            <CalendarPlus className="h-4 w-4" /> Agendar nova consulta
-          </Link>
-        </Button>
-      </div>
+    <div className="max-w-5xl">
+      <h2 className="text-xl font-semibold mb-4">Minha Agenda</h2>
       {loading ? (
         <p className="text-muted-foreground">Carregando...</p>
+      ) : !medicoId ? (
+        <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
+          Seu usuário ainda não está vinculado a um cadastro de médico. Peça ao gestor para fazer a vinculação.
+        </div>
       ) : list.length === 0 ? (
         <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
-          Você ainda não tem consultas agendadas.
+          Você ainda não tem consultas na agenda.
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
@@ -107,9 +129,9 @@ function MinhasConsultas() {
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="font-medium truncate">{c.medicos?.nome ?? "Médico"}</div>
+                  <div className="font-medium truncate">{c.profiles?.nome ?? "Paciente"}</div>
                   <div className="text-sm text-muted-foreground truncate">
-                    {c.medicos?.especialidade}
+                    {c.profiles?.email ?? ""}
                   </div>
                 </div>
                 <StatusBadge status={c.status} />
@@ -139,13 +161,13 @@ function MinhasConsultas() {
           <DialogHeader>
             <DialogTitle>Cancelar consulta</DialogTitle>
             <DialogDescription>
-              Conte rapidamente o motivo do cancelamento. Essa informação será compartilhada com o médico.
+              Informe o motivo do cancelamento. O paciente também verá essa mensagem.
             </DialogDescription>
           </DialogHeader>
           <Textarea
             value={motivo}
             onChange={(e) => setMotivo(e.target.value)}
-            placeholder="Ex.: imprevisto pessoal, melhora dos sintomas, etc."
+            placeholder="Ex.: imprevisto, reagendamento necessário, etc."
             rows={4}
           />
           <DialogFooter>
