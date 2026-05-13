@@ -4,7 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { StatusBadge } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
-import { CalendarPlus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { CalendarPlus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/paciente/")({
@@ -17,6 +26,7 @@ interface Consulta {
   status: string;
   data_consulta: string;
   link_telemedicina: string | null;
+  motivo_cancelamento: string | null;
   medicos: { nome: string; especialidade: string } | null;
 }
 
@@ -24,13 +34,16 @@ function MinhasConsultas() {
   const { user } = useAuth();
   const [list, setList] = useState<Consulta[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cancelTarget, setCancelTarget] = useState<Consulta | null>(null);
+  const [motivo, setMotivo] = useState("");
+  const [busy, setBusy] = useState(false);
 
   const load = async () => {
     if (!user) return;
     setLoading(true);
     const { data, error } = await supabase
       .from("consultas")
-      .select("id, modalidade, status, data_consulta, link_telemedicina, medicos(nome, especialidade)")
+      .select("id, modalidade, status, data_consulta, link_telemedicina, motivo_cancelamento, medicos(nome, especialidade)")
       .eq("paciente_id", user.id)
       .order("data_consulta", { ascending: false });
     if (error) toast.error(error.message);
@@ -42,12 +55,30 @@ function MinhasConsultas() {
     load();
   }, [user]);
 
-  const cancel = async (c: Consulta) => {
+  const openCancel = (c: Consulta) => {
     const diff = (new Date(c.data_consulta).getTime() - Date.now()) / 36e5;
     if (diff < 2) return toast.error("Cancelamento permitido apenas com mais de 2h de antecedência.");
-    const { error } = await supabase.from("consultas").update({ status: "cancelado" }).eq("id", c.id);
+    setMotivo("");
+    setCancelTarget(c);
+  };
+
+  const confirmCancel = async () => {
+    if (!cancelTarget || !user) return;
+    if (motivo.trim().length < 3) return toast.error("Descreva o motivo do cancelamento.");
+    setBusy(true);
+    const { error } = await supabase
+      .from("consultas")
+      .update({
+        status: "cancelado",
+        motivo_cancelamento: motivo.trim(),
+        cancelado_por: user.id,
+        cancelado_em: new Date().toISOString(),
+      })
+      .eq("id", cancelTarget.id);
+    setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Consulta cancelada.");
+    setCancelTarget(null);
     load();
   };
 
@@ -87,10 +118,15 @@ function MinhasConsultas() {
                 <div className="capitalize">{c.modalidade}</div>
                 <div>{new Date(c.data_consulta).toLocaleString("pt-BR")}</div>
               </div>
+              {c.status === "cancelado" && c.motivo_cancelamento && (
+                <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3 text-xs text-destructive">
+                  <span className="font-medium">Motivo do cancelamento:</span> {c.motivo_cancelamento}
+                </div>
+              )}
               <div className="mt-auto flex justify-end">
                 {c.status !== "cancelado" && c.status !== "realizado" && (
-                  <Button variant="outline" size="sm" onClick={() => cancel(c)}>
-                    Cancelar
+                  <Button variant="destructive" size="sm" onClick={() => openCancel(c)}>
+                    <Trash2 className="h-4 w-4" /> Cancelar
                   </Button>
                 )}
               </div>
@@ -98,6 +134,30 @@ function MinhasConsultas() {
           ))}
         </div>
       )}
+      <Dialog open={!!cancelTarget} onOpenChange={(o) => !o && setCancelTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancelar consulta</DialogTitle>
+            <DialogDescription>
+              Conte rapidamente o motivo do cancelamento. Essa informação será compartilhada com o médico.
+            </DialogDescription>
+          </DialogHeader>
+          <Textarea
+            value={motivo}
+            onChange={(e) => setMotivo(e.target.value)}
+            placeholder="Ex.: imprevisto pessoal, melhora dos sintomas, etc."
+            rows={4}
+          />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelTarget(null)} disabled={busy}>
+              Voltar
+            </Button>
+            <Button variant="destructive" onClick={confirmCancel} disabled={busy}>
+              <Trash2 className="h-4 w-4" /> {busy ? "Cancelando..." : "Confirmar cancelamento"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
