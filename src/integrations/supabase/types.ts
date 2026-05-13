@@ -16,6 +16,8 @@ export type Database = {
     Tables: {
       consultas: {
         Row: {
+          cancelado_em: string | null
+          cancelado_por: string | null
           created_at: string
           data_consulta: string
           horario_id: string | null
@@ -23,10 +25,13 @@ export type Database = {
           link_telemedicina: string | null
           medico_id: string
           modalidade: Database["public"]["Enums"]["consulta_modalidade"]
+          motivo_cancelamento: string | null
           paciente_id: string
           status: Database["public"]["Enums"]["consulta_status"]
         }
         Insert: {
+          cancelado_em?: string | null
+          cancelado_por?: string | null
           created_at?: string
           data_consulta: string
           horario_id?: string | null
@@ -34,10 +39,13 @@ export type Database = {
           link_telemedicina?: string | null
           medico_id: string
           modalidade: Database["public"]["Enums"]["consulta_modalidade"]
+          motivo_cancelamento?: string | null
           paciente_id: string
           status?: Database["public"]["Enums"]["consulta_status"]
         }
         Update: {
+          cancelado_em?: string | null
+          cancelado_por?: string | null
           created_at?: string
           data_consulta?: string
           horario_id?: string | null
@@ -45,6 +53,7 @@ export type Database = {
           link_telemedicina?: string | null
           medico_id?: string
           modalidade?: Database["public"]["Enums"]["consulta_modalidade"]
+          motivo_cancelamento?: string | null
           paciente_id?: string
           status?: Database["public"]["Enums"]["consulta_status"]
         }
