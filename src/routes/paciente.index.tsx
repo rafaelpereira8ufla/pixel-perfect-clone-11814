@@ -1,9 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth-context";
 import { StatusBadge } from "@/components/AppShell";
 import { Button } from "@/components/ui/button";
+import { CalendarPlus } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/paciente/")({
@@ -52,7 +53,14 @@ function MinhasConsultas() {
 
   return (
     <div className="max-w-4xl">
-      <h2 className="text-xl font-semibold mb-4">Minhas Consultas</h2>
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+        <h2 className="text-xl font-semibold">Minhas Consultas</h2>
+        <Button asChild>
+          <Link to="/paciente/agendar">
+            <CalendarPlus className="h-4 w-4" /> Agendar nova consulta
+          </Link>
+        </Button>
+      </div>
       {loading ? (
         <p className="text-muted-foreground">Carregando...</p>
       ) : list.length === 0 ? (
