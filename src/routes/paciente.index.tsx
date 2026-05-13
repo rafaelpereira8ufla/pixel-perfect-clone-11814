@@ -68,18 +68,26 @@ function MinhasConsultas() {
           Você ainda não tem consultas agendadas.
         </div>
       ) : (
-        <div className="rounded-2xl border border-border bg-card divide-y divide-border">
+        <div className="grid gap-4 sm:grid-cols-2">
           {list.map((c) => (
-            <div key={c.id} className="p-4 flex items-center justify-between gap-4 flex-wrap">
-              <div>
-                <div className="font-medium">{c.medicos?.nome ?? "Médico"}</div>
-                <div className="text-sm text-muted-foreground">
-                  {c.medicos?.especialidade} • {c.modalidade} •{" "}
-                  {new Date(c.data_consulta).toLocaleString("pt-BR")}
+            <div
+              key={c.id}
+              className="rounded-2xl border border-border bg-card p-5 flex flex-col gap-4 min-h-[160px]"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="font-medium truncate">{c.medicos?.nome ?? "Médico"}</div>
+                  <div className="text-sm text-muted-foreground truncate">
+                    {c.medicos?.especialidade}
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
                 <StatusBadge status={c.status} />
+              </div>
+              <div className="text-sm text-muted-foreground">
+                <div className="capitalize">{c.modalidade}</div>
+                <div>{new Date(c.data_consulta).toLocaleString("pt-BR")}</div>
+              </div>
+              <div className="mt-auto flex justify-end">
                 {c.status !== "cancelado" && c.status !== "realizado" && (
                   <Button variant="outline" size="sm" onClick={() => cancel(c)}>
                     Cancelar
