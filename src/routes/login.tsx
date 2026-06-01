@@ -25,7 +25,10 @@ function Login() {
 
   useEffect(() => {
     if (!loading && user) {
-      const target = search.redirect || primaryRoute(roles);
+      const raw = search.redirect;
+      const safeRedirect =
+        raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : null;
+      const target = safeRedirect || primaryRoute(roles);
       window.location.assign(target);
     }
   }, [user, roles, loading, search.redirect]);

@@ -26,10 +26,6 @@ export function ProtectedShell({ children, allowed }: { children: ReactNode; all
         return;
       }
 
-      if (!cancelled) {
-        setStatus("authorized");
-      }
-
       if (allowed?.length) {
         const { data } = await supabase.from("user_roles").select("role").eq("user_id", user.id);
         const roles = (data ?? []).map((row) => row.role as AppRole);
@@ -40,6 +36,10 @@ export function ProtectedShell({ children, allowed }: { children: ReactNode; all
           }
           return;
         }
+      }
+
+      if (!cancelled) {
+        setStatus("authorized");
       }
     };
 
