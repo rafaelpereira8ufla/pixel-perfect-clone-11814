@@ -19,12 +19,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecepcaoIndexRouteImport } from './routes/recepcao.index'
 import { Route as PacienteIndexRouteImport } from './routes/paciente.index'
 import { Route as MedicoIndexRouteImport } from './routes/medico.index'
+import { Route as GestorIndexRouteImport } from './routes/gestor.index'
 import { Route as RecepcaoPagamentosRouteImport } from './routes/recepcao.pagamentos'
 import { Route as RecepcaoPacientesRouteImport } from './routes/recepcao.pacientes'
 import { Route as RecepcaoCadastrarRouteImport } from './routes/recepcao.cadastrar'
 import { Route as RecepcaoAgendaRouteImport } from './routes/recepcao.agenda'
 import { Route as PacienteResultadosRouteImport } from './routes/paciente.resultados'
 import { Route as PacienteAgendarRouteImport } from './routes/paciente.agendar'
+import { Route as GestorUsuariosRouteImport } from './routes/gestor.usuarios'
 
 const RecepcaoRoute = RecepcaoRouteImport.update({
   id: '/recepcao',
@@ -76,6 +78,11 @@ const MedicoIndexRoute = MedicoIndexRouteImport.update({
   path: '/',
   getParentRoute: () => MedicoRoute,
 } as any)
+const GestorIndexRoute = GestorIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GestorRoute,
+} as any)
 const RecepcaoPagamentosRoute = RecepcaoPagamentosRouteImport.update({
   id: '/pagamentos',
   path: '/pagamentos',
@@ -106,21 +113,28 @@ const PacienteAgendarRoute = PacienteAgendarRouteImport.update({
   path: '/agendar',
   getParentRoute: () => PacienteRoute,
 } as any)
+const GestorUsuariosRoute = GestorUsuariosRouteImport.update({
+  id: '/usuarios',
+  path: '/usuarios',
+  getParentRoute: () => GestorRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
-  '/gestor': typeof GestorRoute
+  '/gestor': typeof GestorRouteWithChildren
   '/login': typeof LoginRoute
   '/medico': typeof MedicoRouteWithChildren
   '/paciente': typeof PacienteRouteWithChildren
   '/recepcao': typeof RecepcaoRouteWithChildren
+  '/gestor/usuarios': typeof GestorUsuariosRoute
   '/paciente/agendar': typeof PacienteAgendarRoute
   '/paciente/resultados': typeof PacienteResultadosRoute
   '/recepcao/agenda': typeof RecepcaoAgendaRoute
   '/recepcao/cadastrar': typeof RecepcaoCadastrarRoute
   '/recepcao/pacientes': typeof RecepcaoPacientesRoute
   '/recepcao/pagamentos': typeof RecepcaoPagamentosRoute
+  '/gestor/': typeof GestorIndexRoute
   '/medico/': typeof MedicoIndexRoute
   '/paciente/': typeof PacienteIndexRoute
   '/recepcao/': typeof RecepcaoIndexRoute
@@ -128,14 +142,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
-  '/gestor': typeof GestorRoute
   '/login': typeof LoginRoute
+  '/gestor/usuarios': typeof GestorUsuariosRoute
   '/paciente/agendar': typeof PacienteAgendarRoute
   '/paciente/resultados': typeof PacienteResultadosRoute
   '/recepcao/agenda': typeof RecepcaoAgendaRoute
   '/recepcao/cadastrar': typeof RecepcaoCadastrarRoute
   '/recepcao/pacientes': typeof RecepcaoPacientesRoute
   '/recepcao/pagamentos': typeof RecepcaoPagamentosRoute
+  '/gestor': typeof GestorIndexRoute
   '/medico': typeof MedicoIndexRoute
   '/paciente': typeof PacienteIndexRoute
   '/recepcao': typeof RecepcaoIndexRoute
@@ -144,17 +159,19 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cadastro': typeof CadastroRoute
-  '/gestor': typeof GestorRoute
+  '/gestor': typeof GestorRouteWithChildren
   '/login': typeof LoginRoute
   '/medico': typeof MedicoRouteWithChildren
   '/paciente': typeof PacienteRouteWithChildren
   '/recepcao': typeof RecepcaoRouteWithChildren
+  '/gestor/usuarios': typeof GestorUsuariosRoute
   '/paciente/agendar': typeof PacienteAgendarRoute
   '/paciente/resultados': typeof PacienteResultadosRoute
   '/recepcao/agenda': typeof RecepcaoAgendaRoute
   '/recepcao/cadastrar': typeof RecepcaoCadastrarRoute
   '/recepcao/pacientes': typeof RecepcaoPacientesRoute
   '/recepcao/pagamentos': typeof RecepcaoPagamentosRoute
+  '/gestor/': typeof GestorIndexRoute
   '/medico/': typeof MedicoIndexRoute
   '/paciente/': typeof PacienteIndexRoute
   '/recepcao/': typeof RecepcaoIndexRoute
@@ -169,12 +186,14 @@ export interface FileRouteTypes {
     | '/medico'
     | '/paciente'
     | '/recepcao'
+    | '/gestor/usuarios'
     | '/paciente/agendar'
     | '/paciente/resultados'
     | '/recepcao/agenda'
     | '/recepcao/cadastrar'
     | '/recepcao/pacientes'
     | '/recepcao/pagamentos'
+    | '/gestor/'
     | '/medico/'
     | '/paciente/'
     | '/recepcao/'
@@ -182,14 +201,15 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/cadastro'
-    | '/gestor'
     | '/login'
+    | '/gestor/usuarios'
     | '/paciente/agendar'
     | '/paciente/resultados'
     | '/recepcao/agenda'
     | '/recepcao/cadastrar'
     | '/recepcao/pacientes'
     | '/recepcao/pagamentos'
+    | '/gestor'
     | '/medico'
     | '/paciente'
     | '/recepcao'
@@ -202,12 +222,14 @@ export interface FileRouteTypes {
     | '/medico'
     | '/paciente'
     | '/recepcao'
+    | '/gestor/usuarios'
     | '/paciente/agendar'
     | '/paciente/resultados'
     | '/recepcao/agenda'
     | '/recepcao/cadastrar'
     | '/recepcao/pacientes'
     | '/recepcao/pagamentos'
+    | '/gestor/'
     | '/medico/'
     | '/paciente/'
     | '/recepcao/'
@@ -216,7 +238,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CadastroRoute: typeof CadastroRoute
-  GestorRoute: typeof GestorRoute
+  GestorRoute: typeof GestorRouteWithChildren
   LoginRoute: typeof LoginRoute
   MedicoRoute: typeof MedicoRouteWithChildren
   PacienteRoute: typeof PacienteRouteWithChildren
@@ -295,6 +317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MedicoIndexRouteImport
       parentRoute: typeof MedicoRoute
     }
+    '/gestor/': {
+      id: '/gestor/'
+      path: '/'
+      fullPath: '/gestor/'
+      preLoaderRoute: typeof GestorIndexRouteImport
+      parentRoute: typeof GestorRoute
+    }
     '/recepcao/pagamentos': {
       id: '/recepcao/pagamentos'
       path: '/pagamentos'
@@ -337,8 +366,28 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PacienteAgendarRouteImport
       parentRoute: typeof PacienteRoute
     }
+    '/gestor/usuarios': {
+      id: '/gestor/usuarios'
+      path: '/usuarios'
+      fullPath: '/gestor/usuarios'
+      preLoaderRoute: typeof GestorUsuariosRouteImport
+      parentRoute: typeof GestorRoute
+    }
   }
 }
+
+interface GestorRouteChildren {
+  GestorUsuariosRoute: typeof GestorUsuariosRoute
+  GestorIndexRoute: typeof GestorIndexRoute
+}
+
+const GestorRouteChildren: GestorRouteChildren = {
+  GestorUsuariosRoute: GestorUsuariosRoute,
+  GestorIndexRoute: GestorIndexRoute,
+}
+
+const GestorRouteWithChildren =
+  GestorRoute._addFileChildren(GestorRouteChildren)
 
 interface MedicoRouteChildren {
   MedicoIndexRoute: typeof MedicoIndexRoute
@@ -390,7 +439,7 @@ const RecepcaoRouteWithChildren = RecepcaoRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CadastroRoute: CadastroRoute,
-  GestorRoute: GestorRoute,
+  GestorRoute: GestorRouteWithChildren,
   LoginRoute: LoginRoute,
   MedicoRoute: MedicoRouteWithChildren,
   PacienteRoute: PacienteRouteWithChildren,

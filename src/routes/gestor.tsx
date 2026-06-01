@@ -1,16 +1,24 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 import { ProtectedShell } from "@/components/ProtectedShell";
 import { AppShell } from "@/components/AppShell";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, Users } from "lucide-react";
 
 export const Route = createFileRoute("/gestor")({
-  component: () => (
+  component: GestorLayout,
+});
+
+function GestorLayout() {
+  return (
     <ProtectedShell allowed={["gestor"]}>
-      <AppShell title="Dashboard Estratégico" items={[{ to: "/gestor", label: "Em breve", icon: BarChart3 }]}>
-        <div className="rounded-2xl border border-border bg-card p-10 text-center text-muted-foreground">
-          KPIs, gráficos e exportação de relatórios chegarão na próxima fase.
-        </div>
+      <AppShell
+        title="Painel do Gestor"
+        items={[
+          { to: "/gestor", label: "Dashboard", icon: BarChart3 },
+          { to: "/gestor/usuarios", label: "Usuários & Funções", icon: Users },
+        ]}
+      >
+        <Outlet />
       </AppShell>
     </ProtectedShell>
-  ),
-});
+  );
+}
