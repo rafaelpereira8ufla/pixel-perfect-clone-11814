@@ -191,6 +191,7 @@ export type Database = {
           data_nascimento: string | null
           email: string | null
           id: string
+          must_change_password: boolean
           nome: string
           telefone: string | null
         }
@@ -200,6 +201,7 @@ export type Database = {
           data_nascimento?: string | null
           email?: string | null
           id: string
+          must_change_password?: boolean
           nome: string
           telefone?: string | null
         }
@@ -209,6 +211,7 @@ export type Database = {
           data_nascimento?: string | null
           email?: string | null
           id?: string
+          must_change_password?: boolean
           nome?: string
           telefone?: string | null
         }
