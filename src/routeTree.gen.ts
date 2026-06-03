@@ -15,6 +15,7 @@ import { Route as MedicoRouteImport } from './routes/medico'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as GestorRouteImport } from './routes/gestor'
 import { Route as CadastroRouteImport } from './routes/cadastro'
+import { Route as AlterarSenhaRouteImport } from './routes/alterar-senha'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RecepcaoIndexRouteImport } from './routes/recepcao.index'
 import { Route as PacienteIndexRouteImport } from './routes/paciente.index'
@@ -56,6 +57,11 @@ const GestorRoute = GestorRouteImport.update({
 const CadastroRoute = CadastroRouteImport.update({
   id: '/cadastro',
   path: '/cadastro',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlterarSenhaRoute = AlterarSenhaRouteImport.update({
+  id: '/alterar-senha',
+  path: '/alterar-senha',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -121,6 +127,7 @@ const GestorUsuariosRoute = GestorUsuariosRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/alterar-senha': typeof AlterarSenhaRoute
   '/cadastro': typeof CadastroRoute
   '/gestor': typeof GestorRouteWithChildren
   '/login': typeof LoginRoute
@@ -141,6 +148,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/alterar-senha': typeof AlterarSenhaRoute
   '/cadastro': typeof CadastroRoute
   '/login': typeof LoginRoute
   '/gestor/usuarios': typeof GestorUsuariosRoute
@@ -158,6 +166,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/alterar-senha': typeof AlterarSenhaRoute
   '/cadastro': typeof CadastroRoute
   '/gestor': typeof GestorRouteWithChildren
   '/login': typeof LoginRoute
@@ -180,6 +189,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/alterar-senha'
     | '/cadastro'
     | '/gestor'
     | '/login'
@@ -200,6 +210,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/alterar-senha'
     | '/cadastro'
     | '/login'
     | '/gestor/usuarios'
@@ -216,6 +227,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/alterar-senha'
     | '/cadastro'
     | '/gestor'
     | '/login'
@@ -237,6 +249,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AlterarSenhaRoute: typeof AlterarSenhaRoute
   CadastroRoute: typeof CadastroRoute
   GestorRoute: typeof GestorRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -287,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/cadastro'
       fullPath: '/cadastro'
       preLoaderRoute: typeof CadastroRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alterar-senha': {
+      id: '/alterar-senha'
+      path: '/alterar-senha'
+      fullPath: '/alterar-senha'
+      preLoaderRoute: typeof AlterarSenhaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -438,6 +458,7 @@ const RecepcaoRouteWithChildren = RecepcaoRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AlterarSenhaRoute: AlterarSenhaRoute,
   CadastroRoute: CadastroRoute,
   GestorRoute: GestorRouteWithChildren,
   LoginRoute: LoginRoute,
@@ -448,13 +469,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

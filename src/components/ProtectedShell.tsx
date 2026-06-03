@@ -38,6 +38,19 @@ export function ProtectedShell({ children, allowed }: { children: ReactNode; all
         }
       }
 
+      // Força troca de senha no primeiro acesso
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("must_change_password")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (profile?.must_change_password && location.pathname !== "/alterar-senha") {
+        if (!cancelled) {
+          window.location.assign("/alterar-senha");
+        }
+        return;
+      }
+
       if (!cancelled) {
         setStatus("authorized");
       }
