@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth, primaryRoute } from "@/lib/auth-context";
+import { primaryRoute, type AppRole } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,22 +14,34 @@ export const Route = createFileRoute("/alterar-senha")({
 });
 
 function AlterarSenha() {
-  const { user, roles, loading } = useAuth();
   const navigate = useNavigate();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [checking, setChecking] = useState(true);
   const [senha, setSenha] = useState("");
   const [confirmar, setConfirmar] = useState("");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && !user) {
-      window.location.assign("/login");
-    }
-  }, [user, loading]);
+    let cancelled = false;
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      if (cancelled) return;
+      if (!session?.user) {
+        window.location.assign("/login?redirect=/alterar-senha");
+        return;
+      }
+      setUserId(session.user.id);
+      setChecking(false);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (senha.length < 8) return toast.error("A senha precisa ter ao menos 8 caracteres.");
     if (senha !== confirmar) return toast.error("As senhas não coincidem.");
+    if (!userId) return;
     setBusy(true);
     try {
       const { error } = await supabase.auth.updateUser({ password: senha });
@@ -37,8 +49,13 @@ function AlterarSenha() {
       const { error: pErr } = await supabase
         .from("profiles")
         .update({ must_change_password: false })
-        .eq("id", user!.id);
+        .eq("id", userId);
       if (pErr) throw pErr;
+      const { data: roleRows } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
+      const roles = (roleRows ?? []).map((r) => r.role as AppRole);
       toast.success("Senha atualizada com sucesso!");
       navigate({ to: primaryRoute(roles) });
     } catch (err: any) {
@@ -47,6 +64,10 @@ function AlterarSenha() {
       setBusy(false);
     }
   };
+
+  if (checking) {
+    return <div className="min-h-screen grid place-items-center text-sm text-muted-foreground">Carregando...</div>;
+  }
 
   return (
     <div className="min-h-screen grid place-items-center bg-background p-6">
