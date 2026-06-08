@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CalendarPlus, Trash2 } from "lucide-react";
+import { CalendarPlus, Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/paciente/")({
@@ -123,7 +123,19 @@ function MinhasConsultas() {
                   <span className="font-medium">Motivo do cancelamento:</span> {c.motivo_cancelamento}
                 </div>
               )}
-              <div className="mt-auto flex justify-end">
+              <div className="mt-auto flex justify-end gap-2 flex-wrap">
+                {c.modalidade === "telemedicina" && c.link_telemedicina && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigator.clipboard.writeText(c.link_telemedicina!);
+                      toast.success("Link de telemedicina copiado!");
+                    }}
+                  >
+                    <Copy className="h-4 w-4" /> Copiar link
+                  </Button>
+                )}
                 {c.status !== "cancelado" && c.status !== "realizado" && (
                   <Button variant="destructive" size="sm" onClick={() => openCancel(c)}>
                     <Trash2 className="h-4 w-4" /> Cancelar
