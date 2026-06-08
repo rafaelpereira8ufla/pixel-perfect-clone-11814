@@ -9,7 +9,7 @@ export const Route = createFileRoute("/paciente")({
 
 function PacienteLayout() {
   return (
-    <ProtectedShell allowed={["paciente", "recepcionista", "medico", "gestor"]}>
+    <ProtectedShell allowed={["paciente"]}>
       <AppShell
         title="Portal do Paciente"
         items={[
