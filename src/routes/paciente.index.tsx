@@ -13,7 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { CalendarPlus, Trash2, Copy, Link2 } from "lucide-react";
+import { CalendarPlus, Trash2, Copy } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/paciente/")({
