@@ -27,7 +27,13 @@ function Login() {
     if (!loading && user) {
       const raw = search.redirect;
       const safeRedirect =
-        raw && raw.startsWith("/") && !raw.startsWith("//") ? raw : null;
+        raw &&
+        raw.startsWith("/") &&
+        !raw.startsWith("//") &&
+        !raw.startsWith("/login") &&
+        !raw.startsWith("/cadastro")
+          ? raw
+          : null;
       const target = safeRedirect || primaryRoute(roles);
       window.location.assign(target);
     }
