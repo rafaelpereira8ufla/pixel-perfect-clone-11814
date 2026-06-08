@@ -135,7 +135,7 @@ function Agendar() {
         <Select
           value={especialidade}
           onValueChange={(v) => {
-            setEspecialidade(v);
+            setEspecialidade(v === "__all__" ? "" : v);
             setMedicoId("");
             setHorarioId("");
           }}
@@ -144,7 +144,7 @@ function Agendar() {
             <SelectValue placeholder="Selecione uma especialidade" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todas</SelectItem>
+            <SelectItem value="__all__">Todas</SelectItem>
             {especialidades.map((e) => (
               <SelectItem key={e} value={e}>
                 {e}
